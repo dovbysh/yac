@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -26,37 +26,44 @@ func resP(s1, s2 *map[byte]uint32) {
 	}
 }
 func main() {
-	reader := bufio.NewReaderSize(os.Stdin, 65535)
 	s1 := make(map[byte]uint32)
 	s2 := make(map[byte]uint32)
 	var s *map[byte]uint32
 	var b byte
 	var e error
+	var n int
 	s = &s1
 	var c, cc uint32
+
+	buf := make([]byte, 4096)
 	for {
-		b, e = reader.ReadByte()
-		if e != nil {
-			fmt.Println(e)
+		if cc > 1 {
 			break
 		}
-		c++
-		if c > 100000 {
-			panic(fmt.Errorf("too long"))
+		n, e = os.Stdin.Read(buf)
+		if e == io.EOF {
+			break
 		}
-		if b == '\n' {
-			c = 0
-			cc++
-			s = &s2
-			if cc > 1 {
-				break
+		for i := 0; i < n; i++ {
+			b = buf[i]
+			c++
+			if c > 100000 {
+				panic(fmt.Errorf("too long"))
 			}
-			continue
+			if b == '\n' {
+				c = 0
+				cc++
+				s = &s2
+				if cc > 1 {
+					break
+				}
+				continue
+			}
+			if b < 'a' || b > 'z' {
+				panic(fmt.Errorf("invalid char"))
+			}
+			(*s)[b]++
 		}
-		if b < 'a' || b > 'z' {
-			panic(fmt.Errorf("invalid char"))
-		}
-		(*s)[b]++
 	}
 	resP(&s1, &s2)
 }
