@@ -30,4 +30,10 @@ func TestSay(t *testing.T) {
 			}
 		})
 	}
+	t.Run("say 22", func(t *testing.T) {
+		s22 := Say("22")
+		if s22 != "22" {
+			t.Errorf("Say(22) = %s, want 22", s22)
+		}
+	})
 }
